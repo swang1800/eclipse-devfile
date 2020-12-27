@@ -1,0 +1,35 @@
+---
+apiVersion: 1.0.0
+metadata:
+  name: hello-world
+projects:
+  - name: hello-world
+    source:
+      type: git
+      location: https://github.com/dneary/hello-world.git
+components:
+  - alias: c-dev
+    type: dockerimage
+    image: dneary/gcc-dev:1
+    command: ['/bin/sh', '-c']
+    args: ['tail -f /dev/null']
+    env:
+      - name: TERM
+        value: xterm
+    mountSources: true
+    memoryLimit: 500M
+commands:
+  - name: build
+    actions:
+      - type: exec
+        component: c-dev
+        command: make
+        workdir: /projects/hello-world
+  - name: run
+    attributes:
+      runType: sequential
+    actions:
+      - type: exec
+        component: c-dev
+        command: ./hello
+        workdir: /projects/hello-world
